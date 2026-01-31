@@ -1,12 +1,12 @@
-\# Differential expression analysis
+# Differential expression analysis
 
 
 
-\## Requirements
+## Requirements
 
-\- R, DESeq2, tidyverse
+- R, DESeq2, tidyverse
 
-\- Python libraries
+- Python libraries
 
 &nbsp;   - pandas
 
@@ -22,7 +22,7 @@
 
 
 
-\## Description
+## Description
 
 Input data - data/Readcounts.txt
 
