@@ -1,0 +1,50 @@
+---
+title: "Gene_expression"
+author: "Lyskova_Alisa"
+date: "2024-05-08"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+expression.data <- read.table('Readcounts.txt', header=TRUE, row.names = 1, sep='\t')
+expression.data
+```
+
+```{r}
+expr.matrix <- as.matrix(expression.data)
+expr.design <- data.frame(row.names = colnames(expr.matrix), condition = c("control", "control", "control", "control", "control", "control", "treated", "treated", "treated", "treated", "treated", "treated"), time = c("00h", "00h", "03h", "03h", "24h", "24h", "00h", "00h", "03h", "03h", "24h", "24h"))
+expr.design
+```
+
+```{r}
+library(DESeq2)
+
+# study expression by condition (so variable condition takes second place)
+dds <- DESeqDataSetFromMatrix(countData = expr.matrix,
+                              colData = expr.design, 
+                              design = ~ time + condition)
+dds <- DESeq(dds)
+res <- results(dds)
+res
+```
+```{r}
+summary(res)
+```
+```{r}
+as.data.frame(res)
+```
+```{r}
+rld <- rlog(dds, blind = TRUE)
+
+write.csv(assay(rld), file = "rlog_transformed_data.csv")
+write.csv(res, file = "deseq2_results.csv")
+```
+
+```{r}
+library(tidyverse)
+
+# assume that differentially expressed genes are with padj < 0.05 and log2FoldChange > 1 (or < -1)
+res2 <- as.data.frame(res) %>% filter(padj < 0.05 & (log2FoldChange < -1 | log2FoldChange > 1))
+write.csv(res2, file = "deseq2_results_significant_genes.csv")
+res2
+```
